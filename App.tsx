@@ -1,12 +1,24 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, View, Button } from 'react-native';
 
 export default function App() {
+  const [cnt,setCnt] = useState(1);
+  // this is a comment
+  // function support when add butt press
+  // add number to text
+  const whenAddPress = () => {
+    // if press + 1 to cnt
+    setCnt(cnt + 1);
+  }
+
   return (
+
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <Text>Close it now! {cnt}</Text>
+      <Button title="Add" onPress={whenAddPress}></Button>
     </View>
+
   );
 }
 
