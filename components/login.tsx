@@ -6,6 +6,8 @@ import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form';
 import { NavigationProp } from '@react-navigation/native';
 import { MyInput } from './ui/MyInput';
 import { MyButton } from './ui/MyButton';
+import { useDispatch } from 'react-redux';
+import { setName } from '../app/auth-slice';
 
 interface Props {
     navigation: NavigationProp<any, any>
@@ -29,6 +31,7 @@ export const Login: FC<Props> = (props) => {
         resolver: zodResolver(LoginSchema)
     });
 
+    const dispatch = useDispatch();
     // when navigate to register screen
     const whenNavigate = () => {
         props.navigation.navigate("Register");
@@ -56,6 +59,10 @@ export const Login: FC<Props> = (props) => {
             const jsonResp = await resp.json();
             if (jsonResp.success) {
                 // user / pasword correct
+                dispatch(setName({
+                    firstName: jsonResp.firstName,
+                    lastName: jsonResp.lastName
+                }));
                 props.navigation.navigate("Main");
             } else {
                 // invalid user or password
@@ -75,12 +82,10 @@ export const Login: FC<Props> = (props) => {
     }
 
     return <>
-        <View className='space-y-4 flex flex-col md:bg-red-500 w-screen h-full py-16'>
-            <View className='flex flex-row justify-center'>
-                <Image source={require('./../assets/logo.jpeg')} style={{ width: 100, height: 100 }} className='rounded-full' />
+        <View className='space-y-4 flex flex-col w-screen h-full py-16 px-8'>
+            <View className='w-full items-center'>
+                <Image source={require("./../assets/logo.jpeg")} style={{width:100, height:100}} className='rounded-full'/>
             </View>
-            <Text className='border-dashed border-red-600 border-t-2 border-b-2 text-3xl text-center text-blue-500 underline font-bold tracking-wider uppercase'>Login Page</Text>
-            <Text className='rounded-lg border border-blue-500 p-2 my-2'>Welcome</Text>
             <View>
                 <MyInput name='userName' control={control} label="ผู้ใช้งาน" />
             </View>
@@ -89,18 +94,18 @@ export const Login: FC<Props> = (props) => {
             </View>
             <View className='flex flex-row space-x-2'>
                 <View className='flex-1'>
-                    <MyButton label='เข้าสู่ระบบ' whenPress={handleSubmit(whenValidatePass, whenValidateFail)} />
+                    <MyButton label='เข้าสู่ระบบ'
+                        whenPress={handleSubmit(whenValidatePass, whenValidateFail)} />
                 </View>
                 <View className='flex-1'>
                     <MyButton label='ยกเลิก' whenPress={whenResetPress} />
                 </View>
             </View>
-            <View className='flex flex-row justify-center'>
+            <View className='w-full'>
                 <Pressable onPress={whenNavigate}>
-                    <Text className='text-blue-800 underline text-lg'>Register new user</Text>
+                    <Text className='text-center text-blue-800 underline text-lg'>Register new user</Text>
                 </Pressable>
             </View>
         </View>
     </>
-
 }
