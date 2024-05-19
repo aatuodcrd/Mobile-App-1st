@@ -1,9 +1,15 @@
 import { FC } from 'react';
-import { View, Text, TextInput, Pressable } from 'react-native';
+import { View, Text, Pressable, Alert } from 'react-native';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller, SubmitHandler, SubmitErrorHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form';
+import { NavigationProp } from '@react-navigation/native';
 import { MyInput } from './ui/MyInput';
+import { MyButton } from './ui/MyButton';
+
+interface Props {
+    navigation: NavigationProp<any, any>
+}
 
 const LoginSchema = z.object({
     userName: z.string().min(3),
@@ -13,7 +19,7 @@ const LoginSchema = z.object({
 
 type LoginModel = z.infer<typeof LoginSchema>;
 
-export const Login: FC = () => {
+export const Login: FC<Props> = (props) => {
     // call hooks
     const { control, handleSubmit, reset } = useForm<LoginModel>({
         defaultValues: {
@@ -23,46 +29,80 @@ export const Login: FC = () => {
         resolver: zodResolver(LoginSchema)
     });
 
+    // when navigate to register screen
+    const whenNavigate = () => {
+        props.navigation.navigate("Register");
+    }
+
     // when reset press
     const whenResetPress = () => {
         reset();
     }
 
     // when validate pass
-    const whenValidatePass: SubmitHandler<LoginModel> = (user) => {
+    const whenValidatePass: SubmitHandler<LoginModel> = async (user) => {
         // your logic when validate pass
         // send data to api server
         console.log(user);
+        try {
+            const resp = await fetch("http://52.221.215.212/login", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userName: user.userName,
+                    password: user.password
+                })
+            });
+            const jsonResp = await resp.json();
+            if (jsonResp.success) {
+                // user / pasword correct
+                props.navigation.navigate("Main");
+            } else {
+                // invalid user or password
+                // warning 
+                Alert.alert("แจ้งเตือน", "ชื่อหรือรหัสผ่านไม่ถูกต้อง");
+            }
+        } catch (e) {
+            Alert.alert("ระบบขัดข้อง", "กรุณาลองอีกครั้งหรือแจ้งทีม support !");
+        }
     }
     // when validate fail
     const whenValidateFail: SubmitErrorHandler<LoginModel> = (error) => {
         // your logic when validate fail
         // notify to user
         console.log(error);
+        Alert.alert("แจ้งเตือน", "กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง");
     }
 
     return <>
-        <View className='flex flex-col bg-blue-900 md:bg-red-400 w-screen h-full py-16 px-8'>
+        <View className='space-y-4 flex flex-col bg-green-200 md:bg-red-500 w-screen h-full py-16 px-8'>
             <Text
-                className='border-dashed border-red-300 border-t-2 border-b-2 text-3xl text-center text-blue-400 underline font-bold tracking-wider uppercase'>Login Page</Text>
-            <Text className='rounded-lg border border-green-200 p-2 my-2'>Welcome</Text>
+                className='border-dashed border-red-600 border-t-2 border-b-2 text-3xl text-center text-blue-500 underline font-bold tracking-wider uppercase'>Login Page</Text>
+            <Text className='rounded-lg border border-blue-500 p-2 my-2'>Welcome</Text>
 
-            <MyInput name='userName' control={control} label="ผู้ใช้งาน" />
-            <MyInput name='password' control={control} isSecure={true} label='รหัสผ่าน' />
+            <View>
+                <MyInput name='userName' control={control} label="ผู้ใช้งาน" />
+            </View>
+
+            <View>
+                <MyInput name='password' control={control} isSecure={true} label='รหัสผ่าน' />
+            </View>
 
             <View className='flex flex-row space-x-2'>
-                <Pressable
-                    onPress={handleSubmit(whenValidatePass, whenValidateFail)}
-                    className='bg-blue-600 py-2 rounded-md flex-[2]'>
-                    <Text className='text-white text-center font-semibold'>เข้าสู่ระบบ</Text>
-                </Pressable>
+                <View className='flex-1'>
+                    <MyButton label='เข้าสู่ระบบ'
+                        whenPress={handleSubmit(whenValidatePass, whenValidateFail)} />
+                </View>
 
-                <Pressable
-                    onPress={whenResetPress}
-                    className='bg-red-400 py-2 rounded-md flex-1'>
-                    <Text className='text-white text-center font-semibold'>ยกเลิก</Text>
-                </Pressable>
+                <View className='flex-1'>
+                    <MyButton label='ยกเลิก'
+                        whenPress={whenResetPress} />
+                </View>
             </View>
+
+            <Pressable onPress={whenNavigate}>
+                <Text>Register new user</Text>
+            </Pressable>
 
         </View>
     </>

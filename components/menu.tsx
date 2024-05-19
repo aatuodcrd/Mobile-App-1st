@@ -3,17 +3,17 @@ import { Text, View, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 interface Props {
-    navigator?: NavigationProp<any, any>
+    // navigator?: NavigationProp<any, any>
 }
 
 export const Menu: FC<Props> = (props) => {
-    const navigator = useNavigation();
+    const navigator = useNavigation<NavigationProp<any, any>>();
     // when menu press
     const whenMenuPress = (screenName: string) => {
-        // navigator.navigate()
-        if (props.navigator) {
-            props.navigator.navigate(screenName);
-        }
+        navigator.navigate(screenName)
+        // if (props.navigator) {
+        //     props.navigator.navigate(screenName);
+        // }
     }
 
     return <>
