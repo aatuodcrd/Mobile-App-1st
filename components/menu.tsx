@@ -2,25 +2,19 @@ import { FC } from 'react';
 import { Text, View, Pressable } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-interface Props {
-    // navigator?: NavigationProp<any, any>
-}
 
-export const Menu: FC<Props> = (props) => {
+export const Menu: FC = () => {
     const navigator = useNavigation<NavigationProp<any, any>>();
     // when menu press
     const whenMenuPress = (screenName: string) => {
         navigator.navigate(screenName)
-        // if (props.navigator) {
-        //     props.navigator.navigate(screenName);
-        // }
     }
 
     return <>
         <View className='flex flex-row flex-wrap px-2 py-5 gap-y-4'>
             <Pressable
                 className='w-1/3 flex flex-col items-center'
-                onPress={() => whenMenuPress("Login")}>
+                onPress={() => whenMenuPress("User")}>
                 <MaterialIcons name="supervised-user-circle" size={64} color="#B0EBB4" />
                 <Text className='font-semibold'>User</Text>
             </Pressable>

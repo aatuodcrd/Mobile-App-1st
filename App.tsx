@@ -6,6 +6,7 @@ import { Main } from './components/main';
 import { ChangePassword } from './components/changePassword';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
+import { User } from './components/user';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -26,6 +27,7 @@ export default function App() {
           component={Main}
         />
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
+        <Stack.Screen name="User" component={User} options={{ title: "แสดงข้อมูลผู้ใช้งาน" }} />
       </Stack.Navigator>
     </NavigationContainer>
   </Provider>
